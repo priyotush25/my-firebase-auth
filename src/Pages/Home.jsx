@@ -1,3 +1,5 @@
+import { Link } from "react-router";
+
 const Home = () => {
   return (
     <div className="max-w-md bg-white rounded-lg shadow-sm p-7 space-y-6 flex flex-col items-center ">
@@ -6,9 +8,12 @@ const Home = () => {
         My Firebase Auth Project
       </h1>
 
-      <button className="w-full px-4 py-2 bg-blue-500 text-white font-semibold text-xl cursor-pointer hover:bg-blue-600 transition-all delay-75">
+      <Link
+        to={"/login"}
+        className="w-full px-4 py-2 bg-blue-500 text-white font-semibold text-xl cursor-pointer hover:bg-blue-600 transition-all delay-75 text-center"
+      >
         Login
-      </button>
+      </Link>
 
       <button className="w-full px-4 py-2 bg-blue-500 text-white font-semibold text-xl cursor-pointer hover:bg-blue-600 transition-all delay-75">
         Register
