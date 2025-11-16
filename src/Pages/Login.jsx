@@ -1,4 +1,5 @@
 import { FcGoogle } from "react-icons/fc";
+import { Link } from "react-router";
 
 const Login = () => {
   const handleSubmit = (e) => {
@@ -69,9 +70,12 @@ const Login = () => {
         {/* Footer */}
         <p className="text-center text-gray-500">
           Don't have an account?{" "}
-          <a href="#" className="text-blue-600 font-semibold hover:underline">
+          <Link
+            to={"/register"}
+            className="text-blue-600 font-semibold hover:underline"
+          >
             Sign up
-          </a>
+          </Link>
         </p>
       </div>
     </div>
