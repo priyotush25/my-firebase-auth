@@ -1,4 +1,4 @@
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { useState } from "react";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import Swal from "sweetalert2";
@@ -8,6 +8,10 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [active, setActive] = useState(false);
+
+  const [user, setUser] = useState(null);
+
+  console.log(user);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -21,12 +25,13 @@ const Login = () => {
     }
 
     signInWithEmailAndPassword(auth, email, password)
-      .then(() => {
+      .then((res) => {
         console.log("sign up successfully");
         Swal.fire({
           icon: "success",
           text: "Login successfully",
         });
+        setUser(res.user);
         setEmail("");
         setPassword("");
       })
@@ -72,47 +77,77 @@ const Login = () => {
       });
   };
 
+  // logout
+  const handleLogout = () => {
+    signOut(auth).then((res) => {
+      console.log(res);
+
+      setUser(null);
+      Swal.fire({
+        icon: "success",
+        text: "Logout successfully",
+      }).catch((err) => {
+        console.log(err.message);
+      });
+    });
+  };
+
   return (
     <div className="flex min-h-screen items-center justify-center">
-      <form
-        className="bg-white shadow-sm p-7 rounded-lg min-w-md"
-        onSubmit={handleSubmit}
-      >
-        <h1 className="text-4xl font-semibold text-center">Login</h1>
-        <div>
-          <p className="text-xl font-semibold mb-2">Email</p>
-          <input
-            type="email"
-            value={email}
-            placeholder="Enter your email"
-            onChange={(e) => setEmail(e.target.value)}
-            className="px-4 py-2 border-2 border-gray-500 w-full"
-          />
+      {user ? (
+        <div className="bg-white flex-col gap-4 shadow-sm p-7 rounded-lg min-w-md flex items-center justify-center">
+          <div>
+            <img
+              className="h-20 w-20 rounded-full border-2 border-blue-300"
+              src={user?.photoURL || "https://vai.palceholder.com/88"}
+              alt=""
+            />
+          </div>
+          <h2 className="text-2xl font-semibold">{user?.displayName}</h2>
+          <h1 className="text-2xl font-semibold">{user?.email}</h1>
+          <button onClick={handleLogout} className="my-btn">
+            Logout
+          </button>
         </div>
-        <div>
-          <p className="text-xl font-semibold mb-2 mt-4">Password</p>
-          <input
-            type={active ? "text" : "password"}
-            placeholder="Enter your password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="px-4 py-2 border-2 border-gray-500 w-full relative"
-          />
+      ) : (
+        <form
+          className="bg-white shadow-sm p-7 rounded-lg min-w-md"
+          onSubmit={handleSubmit}
+        >
+          <h1 className="text-4xl font-semibold text-center">Login</h1>
+          <div>
+            <p className="text-xl font-semibold mb-2">Email</p>
+            <input
+              type="email"
+              value={email}
+              placeholder="Enter your email"
+              onChange={(e) => setEmail(e.target.value)}
+              className="px-4 py-2 border-2 border-gray-500 w-full"
+            />
+          </div>
+          <div>
+            <p className="text-xl font-semibold mb-2 mt-4">Password</p>
+            <input
+              type={active ? "text" : "password"}
+              placeholder="Enter your password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="px-4 py-2 border-2 border-gray-500 w-full relative"
+            />
 
-          <button
-            type="button"
-            className="absolute mt-3 -ml-8"
-            onClick={() => setActive(!active)}
-          >
-            {active ? <FiEye /> : <FiEyeOff />}
-          </button>
-        </div>
-        <div>
-          <button className="px-4 py-3 cursor-pointer font-semibold bg-blue-500 text-white border-2 mt-5 w-full">
-            Login
-          </button>
-        </div>
-      </form>
+            <button
+              type="button"
+              className="absolute mt-3 -ml-8"
+              onClick={() => setActive(!active)}
+            >
+              {active ? <FiEye /> : <FiEyeOff />}
+            </button>
+          </div>
+          <div>
+            <button className="my-btn">Login</button>
+          </div>
+        </form>
+      )}
     </div>
   );
 };
