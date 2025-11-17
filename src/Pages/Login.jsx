@@ -1,7 +1,8 @@
 import { signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { useState } from "react";
 import { FiEye, FiEyeOff } from "react-icons/fi";
-import Swal from "sweetalert2";
+import { toast } from "react-toastify";
+
 import { auth } from "../Firebase/firebase.config";
 
 const Login = () => {
@@ -11,27 +12,24 @@ const Login = () => {
 
   const [user, setUser] = useState(null);
 
-  console.log(user);
-
   const handleSubmit = (e) => {
     e.preventDefault();
 
     console.log("Email:", email);
     console.log("Password:", password);
 
-    if (!email || !password) {
-      Swal.fire("Error", "Email and password cannot be empty.", "error");
-      return;
-    }
-
     signInWithEmailAndPassword(auth, email, password)
       .then((res) => {
-        console.log("sign up successfully");
-        Swal.fire({
-          icon: "success",
-          text: "Login successfully",
-        });
+        if (!res.user.emailVerified) {
+          toast.error("Email Not verify");
+          return;
+        }
+
+        console.log("login user : ", res.user);
+
+        toast.success("Login successfully");
         setUser(res.user);
+
         setEmail("");
         setPassword("");
       })
@@ -70,26 +68,20 @@ const Login = () => {
           default:
             msg = error.message;
         }
-        Swal.fire({
-          icon: "error",
-          text: msg,
-        });
+        toast.error(msg);
       });
   };
 
   // logout
   const handleLogout = () => {
-    signOut(auth).then((res) => {
-      console.log(res);
-
-      setUser(null);
-      Swal.fire({
-        icon: "success",
-        text: "Logout successfully",
-      }).catch((err) => {
-        console.log(err.message);
+    signOut(auth)
+      .then((res) => {
+        toast.success("Logout successfully");
+        console.log(res);
+      })
+      .catch((e) => {
+        toast.error("Logout fail", e.message);
       });
-    });
   };
 
   return (

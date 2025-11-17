@@ -1,4 +1,8 @@
-import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  sendEmailVerification,
+  updateProfile,
+} from "firebase/auth";
 import { useState } from "react";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import { toast } from "react-toastify";
@@ -18,15 +22,17 @@ const Register = () => {
     // sign up in firebase
     createUserWithEmailAndPassword(auth, email, password)
       .then((res) => {
-        toast.success("signup successfully");
-
         // update profile
-        updateProfile(res.user, {
-          displayName: name,
-          photoURL: photo,
-        })
-          .then((res) => {
-            console.log(res);
+        updateProfile(res.user, { displayName: name, photoURL: photo })
+          .then(() => {
+            // email verify
+            sendEmailVerification(res.user)
+              .then(() => {
+                toast.success("Signup successful. Please verify your email.");
+              })
+              .catch((e) => {
+                toast.error(e.message);
+              });
           })
           .catch((e) => {
             console.log(e.message);
