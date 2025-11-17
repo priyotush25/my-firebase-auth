@@ -1,5 +1,9 @@
-import { signInWithEmailAndPassword, signOut } from "firebase/auth";
-import { useState } from "react";
+import {
+  sendPasswordResetEmail,
+  signInWithEmailAndPassword,
+  signOut,
+} from "firebase/auth";
+import { useRef, useState } from "react";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import { toast } from "react-toastify";
 
@@ -11,7 +15,9 @@ const Login = () => {
   const [active, setActive] = useState(false);
 
   const [user, setUser] = useState(null);
+  const emailRef = useRef(null);
 
+  // login
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -84,6 +90,19 @@ const Login = () => {
       });
   };
 
+  // password reset
+  const handleResetPassword = () => {
+    const email = emailRef.current.value;
+
+    sendPasswordResetEmail(auth, email)
+      .then(() => {
+        toast.success("check your email");
+      })
+      .catch((e) => {
+        toast.error(e.message);
+      });
+  };
+
   return (
     <div className="flex min-h-screen items-center justify-center">
       {user ? (
@@ -107,16 +126,21 @@ const Login = () => {
           onSubmit={handleSubmit}
         >
           <h1 className="text-4xl font-semibold text-center">Login</h1>
+
+          {/* email */}
           <div>
             <p className="text-xl font-semibold mb-2">Email</p>
             <input
               type="email"
               value={email}
+              ref={emailRef}
               placeholder="Enter your email"
               onChange={(e) => setEmail(e.target.value)}
               className="px-4 py-2 border-2 border-gray-500 w-full"
             />
           </div>
+
+          {/* password */}
           <div>
             <p className="text-xl font-semibold mb-2 mt-4">Password</p>
             <input
@@ -135,6 +159,18 @@ const Login = () => {
               {active ? <FiEye /> : <FiEyeOff />}
             </button>
           </div>
+          <div>
+            <button
+              type="button"
+              onClick={handleResetPassword}
+              className="mt-4"
+            >
+              <h1 className="text-lg text-blue-500 font-semibold ">
+                Forget Password
+              </h1>
+            </button>
+          </div>
+
           <div>
             <button className="my-btn">Login</button>
           </div>
