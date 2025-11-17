@@ -1,11 +1,13 @@
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
+import { FiEye, FiEyeOff } from "react-icons/fi";
 import Swal from "sweetalert2";
 import { auth } from "../Firebase/firebase.config";
 
 const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [active, setActive] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -14,10 +16,12 @@ const Register = () => {
     createUserWithEmailAndPassword(auth, email, password)
       .then(() => {
         console.log("sign up successfully");
+
         Swal.fire({
           icon: "success",
           text: "Registration successfully",
         });
+
         setEmail("");
         setPassword("");
       })
@@ -75,6 +79,7 @@ const Register = () => {
           <p className="text-xl font-semibold mb-2">Email</p>
           <input
             type="email"
+            value={email}
             placeholder="Enter your email"
             onChange={(e) => setEmail(e.target.value)}
             className="px-4 py-2 border-2 border-gray-500 w-full"
@@ -83,11 +88,19 @@ const Register = () => {
         <div>
           <p className="text-xl font-semibold mb-2 mt-4">Password</p>
           <input
-            type="password"
+            type={active ? "text" : "password"}
+            value={password}
             placeholder="Enter your password"
             onChange={(e) => setPassword(e.target.value)}
-            className="px-4 py-2 border-2 border-gray-500 w-full"
+            className="px-4 py-2 border-2 border-gray-500 w-full relative"
           />
+          <button
+            type="button"
+            className="absolute mt-3 -ml-8"
+            onClick={() => setActive(!active)}
+          >
+            {active ? <FiEye /> : <FiEyeOff />}
+          </button>
         </div>
         <div>
           <button className="px-4 py-3 cursor-pointer font-semibold bg-blue-500 text-white border-2 mt-5 w-full">
